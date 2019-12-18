@@ -1,0 +1,5 @@
+entity_id,store_id,parent,is_active,include_in_menu,name,available_sort_by,url_key,position
+3,0,1,1,1,Long,"position,name,price",lamiacia,2
+4,0,1,1,1,Long 1,"position,name",pink category ,2
+5,0,1,1,1,Long 2,"position,price",white category,2
+6,0,1,1,1,Long 3,,tiger eye,2
