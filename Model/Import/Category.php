@@ -327,11 +327,6 @@ class Category extends AbstractEntity
                     continue;
                 }
 
-                if(!$this->getErrorAggregator()->isRowInvalid($rowNum))
-                {
-                    $a = 1;
-                }
-
                 $rowId = $row[static::ENTITY_ID_COLUMN];
                 $rows[] = $rowId;
                 $columnValues = [];
@@ -421,10 +416,11 @@ class Category extends AbstractEntity
             $modelCategory->setAvailableSortBy($row['available_sort_by']);
             $modelCategory->setUrlKey($row['url_key']);
             $modelCategory->setPosition('position');
-            if($add)
+            if ($add) {
                 $this->categoryRepository->save($modelCategory);
-            else
+            } else {
                 $this->resourceCategory->save($modelCategory);
+            }
         }
         $this->countItemsCreated = (int)$countCreate;
         $this->countItemsUpdated = (int)$countUpdate;
