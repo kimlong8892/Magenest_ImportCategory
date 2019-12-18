@@ -405,31 +405,26 @@ class Category extends AbstractEntity
         $countUpdate = 0;
         foreach ($rows as $row) {
             $modelCategory = $this->modelCategoryFactory->create();
-            $modelCategory->load($row['entity_id']);
-            if ($modelCategory->getId() != null) {
-                // update
-                $modelCategory->setStoreId($row['store_id']);
-                $modelCategory->setParentId($row['parent']);
-                $modelCategory->setIsActive($row['is_active']);
-                $modelCategory->setIncludeInMenu($row['include_in_menu']);
-                $modelCategory->setName($row['name']);
-                $modelCategory->setAvailableSortBy($row['available_sort_by']);
-                $modelCategory->setUrlKey($row['url_key']);
-                $modelCategory->setPosition('position');
-                $this->resourceCategory->save($modelCategory);
+            $add = false;
+            if ($modelCategory->load($row['entity_id'])->getId() != null) {
+                $modelCategory->load($row['entity_id']);
                 $countUpdate++;
             } else {
-                $modelCategory->setStoreId($row['store_id']);
-                $modelCategory->setParentId($row['parent']);
-                $modelCategory->setIsActive($row['is_active']);
-                $modelCategory->setIncludeInMenu($row['include_in_menu']);
-                $modelCategory->setName($row['name']);
-                $modelCategory->setAvailableSortBy($row['available_sort_by']);
-                $modelCategory->setUrlKey($row['url_key']);
-                $modelCategory->setPosition('position');
-                $this->categoryRepository->save($modelCategory);
                 $countCreate++;
+                $add = true;
             }
+            $modelCategory->setStoreId($row['store_id']);
+            $modelCategory->setParentId($row['parent']);
+            $modelCategory->setIsActive($row['is_active']);
+            $modelCategory->setIncludeInMenu($row['include_in_menu']);
+            $modelCategory->setName($row['name']);
+            $modelCategory->setAvailableSortBy($row['available_sort_by']);
+            $modelCategory->setUrlKey($row['url_key']);
+            $modelCategory->setPosition('position');
+            if($add)
+                $this->categoryRepository->save($modelCategory);
+            else
+                $this->resourceCategory->save($modelCategory);
         }
         $this->countItemsCreated = (int)$countCreate;
         $this->countItemsUpdated = (int)$countUpdate;
