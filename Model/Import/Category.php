@@ -271,7 +271,6 @@ class Category extends AbstractEntity
                 if ($this->getErrorAggregator()->hasToBeTerminated()) {
                     $this->getErrorAggregator()->addRowToSkip($rowNum);
                 }
-                $this->Delete($rows);
             }
         }
 
@@ -282,20 +281,6 @@ class Category extends AbstractEntity
         return false;
     }
 
-    protected function Delete($rows)
-    {
-        $modelCategory = $this->modelCategoryFactory->create();
-        $countDelete = 0;
-        $datas = $modelCategory->getCollection()->addFieldToFilter('entity_id', ['neq' => 1])->addFieldToFilter('entity_id', ['neq' => 2])->getData();
-        foreach ($datas as $data) {
-            $modelCategory->load($data['entity_id']);
-            if (array_search($modelCategory->getId(), $rows) === true) {
-                $countDelete++;
-                $modelCategory->delete();
-            }
-        }
-        $this->countItemsDeleted = (int)$countDelete;
-    }
 
     /**
      * Save and replace entities
@@ -332,7 +317,7 @@ class Category extends AbstractEntity
             }
 
             if (Import::BEHAVIOR_REPLACE === $behavior) {
-                if ($rows && $this->deleteEntityFinish(array_unique($rows))) {
+                if ($rows) {
                     $this->saveEntityFinish($entityList, true);
                 }
             } elseif (Import::BEHAVIOR_APPEND === $behavior) {
@@ -374,16 +359,15 @@ class Category extends AbstractEntity
 
     private function Replace($rows)
     {
-        $countDelete = 0;
         $modelCategory = $this->modelCategoryFactory->create();
         $datas = $modelCategory->getCollection()->addFieldToFilter('entity_id', ['neq' => 1])->addFieldToFilter('entity_id', ['neq' => 2])->getData();
+        $rowId = [];
         foreach ($datas as $data) {
-            $modelCategory->load($data['entity_id']);
-            $modelCategory->delete();
-            $countDelete++;
+            $rowId[] = $data['entity_id'];
         }
+        $this->deleteEntityFinish(array_unique($rowId));
         $this->AddOrUpdate($rows);
-        $this->countItemsDeleted = $countDelete;
+        $this->countItemsDeleted = count($rowId);
     }
 
     private function AddOrUpdate($rows)
