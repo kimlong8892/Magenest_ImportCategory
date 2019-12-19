@@ -67,10 +67,7 @@ class Category extends AbstractEntity
      * @var ResourceConnection
      */
     private $resource;
-    protected $objectManager;
-
     protected $modelCategoryFactory;
-
     protected $resourceCategory;
     protected $categoryRepository;
 
@@ -138,9 +135,6 @@ class Category extends AbstractEntity
      */
     public function validateRow(array $rowData, $rowNum): bool
     {
-        $b = $rowNum;
-        $a = $rowData;
-
         $id = (string)$rowData[self::ENTITY_ID_COLUMN];
         $storeId = (string)$rowData[self::STORE_ID];
         $name = (string)$rowData[self::NAME];
@@ -269,7 +263,6 @@ class Category extends AbstractEntity
         while ($bunch = $this->_dataSourceModel->getNextBunch()) {
             foreach ($bunch as $rowNum => $rowData) {
                 $this->validateRow($rowData, $rowNum);
-
                 if (!$this->getErrorAggregator()->isRowInvalid($rowNum)) {
                     $rowId = $rowData[static::ENTITY_ID_COLUMN];
                     $rows[] = $rowId;
@@ -358,7 +351,6 @@ class Category extends AbstractEntity
     private function saveEntityFinish(array $entityData, $replace = false): bool
     {
         if ($entityData) {
-            $tableName = $this->connection->getTableName(static::TABLE);
             $rows = [];
 
             foreach ($entityData as $entityRows) {
